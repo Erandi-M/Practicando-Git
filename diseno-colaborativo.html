@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Diseño colaborativo</title>
+<style>
+  /* ===== MEDIDAS (reemplaza por las reales) =====
+     A: ancho total ............................ 3600px
+     B: alto total (la pestaña baja hasta aquí)  6000px
+     C: línea divisoria, desde la izquierda .... 2200px
+     D: de arriba hasta donde empieza la pestaña 3300px
+     E: lo que sale la pestaña a la izquierda .. 8000
+     px
+  */
+  :root {
+    --A: 460px;
+    --B: 700px;
+    --C: 320px;
+    --D: 430px;
+    --E: 900px;
+    --color-mio: #a9bfee;
+    --color-otro: #ffffff;
+  }
+
+  body { margin: 0; }
+
+  .lienzo {
+    position: relative;
+    margin-left: max(0px, calc(var(--E) - var(--C)));
+    width: var(--A);
+    height: var(--B);
+    background: #fff;
+  }
+  .lienzo div { position: absolute; inset: 0; }
+
+  /* MI PIEZA: franja derecha + pestaña a la izquierda hasta el fondo */
+  .mia { background: var(--color-mio);
+    clip-path: polygon(var(--C) 0, 100% 0, 100% 100%,
+                       calc(var(--C) - var(--E)) 100%,
+                       calc(var(--C) - var(--E)) var(--D),
+                       var(--C) var(--D)); }
+
+  /* PIEZA DEL COLABORADOR: el hueco que encaja con la mía */
+  .otro { background: var(--color-otro);
+    clip-path: polygon(0 0, var(--C) 0, var(--C) var(--D),
+                       calc(var(--C) - var(--E)) var(--D),
+                       calc(var(--C) - var(--E)) 100%, 0 100%); }
+</style>
+</head>
+<body>
+
+<div class="lienzo">
+  <div class="otro"></div>  <!-- colaborador -->
+  <div class="mia"></div>   <!-- mía -->
+</div>
+
+<script>
+  /*  color */
+  function unificarColor(color) {
+    document.documentElement.style.setProperty('--color-mio', color);
+    document.documentElement.style.setProperty('--color-otro', color);
+  }
+
+  /* Cuando colab suba su archivo a GitHub (main, con Pages), se unifica */
+  const ARCHIVO = 'parte-colaborador.html';
+  const timer = setInterval(async () => {
+    try {
+      const r = await fetch(ARCHIVO + '?t=' + Date.now(), { cache: 'no-store' });
+      if (r.ok) { unificarColor('#6f93e0'); clearInterval(timer); }
+    } catch (e) {}
+  }, 20000);
+</script>
+</body>
+</html>
